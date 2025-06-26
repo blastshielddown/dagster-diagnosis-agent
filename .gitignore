@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
