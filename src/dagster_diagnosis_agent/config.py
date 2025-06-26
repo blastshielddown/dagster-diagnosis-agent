@@ -1,7 +1,11 @@
 """
 Configuration for Dagster Diagnosis Agent.
 """
+from dotenv import load_dotenv
 import os
+
+# Load environment variables from a .env file if present
+load_dotenv()
 
 # Dagster Cloud settings
 DAGSTER_CLOUD_API_TOKEN = os.environ.get("DAGSTER_CLOUD_API_TOKEN")

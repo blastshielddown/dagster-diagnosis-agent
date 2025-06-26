@@ -16,6 +16,21 @@ pip install uv
 uv lock && uv sync
 ```
 
+### Environment
+
+Copy the example environment file and fill in your credentials:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` to set:
+```dotenv
+DAGSTER_CLOUD_API_TOKEN=your-dagster-cloud-token
+OPENAI_API_KEY=your-openai-api-key
+# (Optional) DAGSTER_CLOUD_GRAPHQL_URL=https://dagster.cloud/api/graphql
+```
+
 ## Running
 
 Run the agent script:
