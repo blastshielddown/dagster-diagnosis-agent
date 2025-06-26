@@ -94,3 +94,5 @@ def main() -> None:  # noqa: D401 – public CLI entrypoint
 
     result = Runner.run_sync(agent, f"Fetch and diagnose errors for {run_url}")
     print(result.final_output)
+    # Explicitly exit to terminate any lingering background processes or threads
+    sys.exit(0)

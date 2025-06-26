@@ -64,13 +64,8 @@ def diagnose_logs(log_text: str) -> str:  # noqa: D401 – public tool
         class _StubChatCompletion:
             @staticmethod
             def create(*_args, **_kwargs):
-                return types.SimpleNamespace(
-                    choices=[
-                        _StubChoice(
-                            "Stub diagnosis: unable to run in the current offline environment."
-                        )
-                    ]
-                )
+                # Simulate API failure in offline environment to trigger fallback logic
+                raise RuntimeError("OpenAI API not available in offline environment")
 
         openai = types.ModuleType("openai")  # type: ignore
         openai.ChatCompletion = _StubChatCompletion  # type: ignore
@@ -119,4 +114,3 @@ def diagnose_logs(log_text: str) -> str:  # noqa: D401 – public tool
             f"Automatic OpenAI diagnosis failed ({exc.__class__.__name__}: {exc}).\n"
             f"{hint}"
         )
-

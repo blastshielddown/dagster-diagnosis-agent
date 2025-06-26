@@ -9,11 +9,11 @@ A diagnostic agent for Dagster.
 
 ## Setup
 
-Install uv and sync the project environment:
+Install uv and sync the project environment (including optional extras):
 
 ```bash
 pip install uv
-uv lock && uv sync
+uv lock && uv sync --all-extras
 ```
 
 ### Environment
