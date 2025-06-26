@@ -1,9 +1,8 @@
 """
 Client for interacting with Dagster Cloud GraphQL API.
 
-This is a direct copy of the original implementation under
-``dagster_diagnosis_agent``.  Only the import path for the sibling *config*
-module changes to reflect the new package name.
+Direct port of the original client implementation – only the surrounding
+package / import paths have been renamed.
 """
 
 import logging
@@ -128,4 +127,3 @@ class DagsterClient:
 
 # Default pre-instantiated client used by tool wrappers
 client = DagsterClient(token=DAGSTER_CLOUD_API_TOKEN)
-

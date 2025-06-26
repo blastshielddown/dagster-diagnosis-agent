@@ -2,8 +2,8 @@
 Configuration for Dagster Diagnostic Agent.
 """
 
-# The file content mirrors the previous implementation (when the package was
-# named ``dagster_diagnosis_agent``) so that external behaviour is preserved.
+# Configuration logic remains identical to the original package – only the
+# import path has changed to ``dagster_diagnostic_agent``.
 
 import os
 
@@ -39,4 +39,3 @@ OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 DAGSTER_CLOUD_API_TOKEN = DAGSTER_CLOUD_API_TOKEN or "DUMMY_DAGSTER_CLOUD_TOKEN"
 OPENAI_API_KEY = OPENAI_API_KEY or "DUMMY_OPENAI_API_KEY"
-

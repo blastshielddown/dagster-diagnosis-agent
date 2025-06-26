@@ -10,8 +10,8 @@ authors = [
 # downloads are therefore impossible.  All third-party dependencies are marked
 # as *optional* extras so that installing the base package requires **zero**
 # additional downloads.  Where the optional libraries are absent the codebase
-# falls back to lightweight stubs (see the ``dagster_diagnosis_agent``
-# package) that provide just enough functionality for the unit tests to run.
+# falls back to lightweight stubs bundled within the package that provide just
+# enough functionality for the unit tests to run.
 
 requires-python = ">=3.10"
 

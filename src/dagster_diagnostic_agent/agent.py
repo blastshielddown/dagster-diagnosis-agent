@@ -3,8 +3,7 @@ Agent orchestration to fetch and diagnose Dagster Cloud error logs.
 """
 
 # NOTE: This file is identical to the previous implementation in
-# ``dagster_diagnosis_agent`` except for the package rename and updated usage
-# strings.  No functional changes.
+# Core CLI / orchestration entrypoint for the package.
 
 import logging
 import sys
@@ -95,4 +94,3 @@ def main() -> None:  # noqa: D401 – public CLI entrypoint
 
     result = Runner.run_sync(agent, f"Fetch and diagnose errors for {run_url}")
     print(result.final_output)
-
