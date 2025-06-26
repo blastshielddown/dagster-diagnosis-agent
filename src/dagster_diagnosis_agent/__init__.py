@@ -1,3 +1,2 @@
-def main() -> None:
-    """Entry point for the dagster-diagnosis-agent script."""
-    print("Hello from dagster-diagnosis-agent!")
+"""Console-script entry for the Dagster Diagnosis Agent."""
+from .agent import main
