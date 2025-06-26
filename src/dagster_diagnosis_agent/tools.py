@@ -3,12 +3,12 @@ Tools exposed to the Dagster Diagnosis Agent.
 """
 from .dagster_client import client
 
-from openai_agents import Tool
+from agents import function_tool
 
 
-@Tool(
-    name="fetch_dagster_logs",
-    description="Given a Dagster Cloud run URL, return the raw error logs.",
+@function_tool(
+    name_override="fetch_dagster_logs",
+    description_override="Given a Dagster Cloud run URL, return the raw error logs.",
 )
 def fetch_dagster_logs(run_url: str) -> str:
     """
@@ -17,12 +17,9 @@ def fetch_dagster_logs(run_url: str) -> str:
     return client.fetch_error_logs(run_url)
 
 
-@Tool(
-    name="diagnose_logs",
-    description=(
-        "Given error logs, return a natural-language diagnosis "
-        "and next-step recommendations."
-    ),
+@function_tool(
+    name_override="diagnose_logs",
+    description_override="Given error logs, return a natural-language diagnosis and next-step recommendations.",
 )
 def diagnose_logs(log_text: str) -> str:
     """
