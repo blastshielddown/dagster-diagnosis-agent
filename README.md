@@ -1,4 +1,4 @@
-# dagster-diagnosis-agent
+# dagster-diagnostic-agent
 
 A diagnostic agent for Dagster.
 
@@ -36,5 +36,5 @@ OPENAI_API_KEY=your-openai-api-key
 Run the agent script with a Dagster Cloud run URL:
 
 ```bash
-uv run dagster-diagnosis-agent https://<your-dagster-domain>/org/<org-name>/runs/<run-id>
+uv run dagster-diagnostic-agent https://<your-dagster-domain>/org/<org-name>/runs/<run-id>
 ```

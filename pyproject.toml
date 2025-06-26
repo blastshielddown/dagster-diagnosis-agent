@@ -1,5 +1,5 @@
 [project]
-name = "dagster-diagnosis-agent"
+name = "dagster-diagnostic-agent"
 version = "0.1.0"
 description = "A diagnostic agent for Dagster."
 readme = "README.md"
@@ -23,7 +23,7 @@ full = [
 ]
 
 [project.scripts]
-dagster-diagnosis-agent = "dagster_diagnosis_agent:main"
+dagster-diagnostic-agent = "dagster_diagnostic_agent:main"
 
 [build-system]
 requires = ["hatchling"]
