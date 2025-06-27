@@ -1,0 +1,63 @@
+#
+# This workflow runs the Dagster Diagnostic Agent via 'uv run dagster-diagnostic-agent'.
+#
+# Required secrets (Settings → Secrets):
+#   - DAGSTER_CLOUD_API_TOKEN: Your Dagster Cloud API token
+#   - OPENAI_API_KEY: Your OpenAI API key
+#
+# Optional repository variable (Settings → Variables → Actions):
+#   - RUNS_ON: Runner label (default 'ubuntu-latest')
+#
+# Workflow dispatch inputs:
+#   - run_url (required): URL of the Dagster run to diagnose
+#   - dagster_cloud_graphql_url (optional): Override GraphQL endpoint
+#   - callback_url (required): Callback URL to POST the agent output when complete
+#
+name: "Run Dagster Diagnostic Agent"
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_url:
+        description: "Dagster run URL to diagnose (e.g. https://<domain>/org/<org>/runs/<run-id>)"
+        required: true
+      dagster_cloud_graphql_url:
+        description: "Optional Dagster Cloud GraphQL API URL override"
+        required: false
+      callback_url:
+        description: "Callback URL to POST the agent output when complete"
+        required: true
+
+jobs:
+  run-agent:
+    runs-on: ${{ vars.RUNS_ON || 'ubuntu-latest' }}
+    env:
+      DAGSTER_CLOUD_API_TOKEN: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      DAGSTER_CLOUD_GRAPHQL_URL: ${{ github.event.inputs.dagster_cloud_graphql_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install uv and project dependencies
+        run: |
+          pip install uv
+          uv lock
+          uv sync --all-extras
+
+      - name: Run Dagster Diagnostic Agent
+        id: run-agent
+        run: |
+          uv run dagster-diagnostic-agent "${{ github.event.inputs.run_url }}" | tee agent_output.txt
+
+      - name: Send output to callback URL
+        if: always()
+        run: |
+          curl -X POST "${{ github.event.inputs.callback_url }}" \
+            -H "Content-Type: text/plain" \
+            --data-binary @agent_output.txt
