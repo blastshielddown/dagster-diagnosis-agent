@@ -7,14 +7,20 @@ package / import paths have been renamed.
 
 import logging
 import re
+import socket
 from typing import List
 from urllib.parse import urlparse
 
 # Optional dependency: ``dagster-graphql``
+#
+# The import occasionally fails due to upstream package version skews (e.g.
+# incompatible ``pendulum`` releases).  We therefore treat *any* exception
+# during the import as an indicator that the full Dagster GraphQL client is
+# unavailable in the current environment and fall back to a lightweight stub.
 try:
     from dagster_graphql.client import DagsterGraphQLClient  # type: ignore
     from dagster_graphql.client.query import RUN_EVENTS_QUERY  # type: ignore
-except ModuleNotFoundError:  # pragma: no cover – offline / CI stub
+except Exception:  # noqa: BLE001
 
     class _StubDagsterGraphQLClient:  # noqa: D401 – minimal placeholder
         def __init__(self, *_, **__):
@@ -31,6 +37,14 @@ from .config import DAGSTER_CLOUD_API_TOKEN
 
 
 logger = logging.getLogger(__name__)
+
+# Set a *global* default socket timeout so that any downstream HTTP request
+# (including those made inside the Dagster GraphQL client or the generic
+# ``requests`` library) fails fast instead of hanging indefinitely.
+#
+# A 15-second window is usually sufficient for cloud environments while still
+# preventing user-visible stalls.
+socket.setdefaulttimeout(15)
 
 
 class DagsterClient:

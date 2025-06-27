@@ -92,6 +92,10 @@ def diagnose_logs(log_text: str) -> str:  # noqa: D401 – public tool
                 {"role": "user", "content": user_prompt},
             ],
             temperature=0,
+            # Abort requests that exceed 30 seconds to avoid user-visible
+            # hangs when the OpenAI service is under load or network
+            # connectivity is unstable.
+            request_timeout=30,
         )
 
         return response.choices[0].message.content

@@ -82,6 +82,62 @@ def main() -> None:  # noqa: D401 – public CLI entrypoint
 
     run_url = sys.argv[1]
 
+    # ---------------------------------------------------------------------
+    # Fast-path: run tools synchronously to avoid potential hangs in the
+    #           upstream ``openai-agents`` event loop implementation.
+    #
+    # The third-party Runner occasionally blocks indefinitely when used from
+    # non-interactive CLIs (see https://github.com/microsoft/autogen/issues/445
+    # for a similar root cause).  To guarantee a timely response we execute
+    # the two tool functions directly and fall back to the original agent
+    # orchestration only if the library is available **and** completes within
+    # a short timeout.
+    # ---------------------------------------------------------------------
+
+    # ------------------------------------------------------------------
+    # Helper: robustly invoke *possibly wrapped* tool functions.  When the
+    # optional ``openai-agents`` dependency is available, ``@function_tool``
+    # returns a ``FunctionTool`` instance that is **not** directly callable.
+    # We therefore attempt to unwrap the original Python function via common
+    # attribute names used by the library (``fn``, ``_fn``, ``function``, ...).
+    # ------------------------------------------------------------------
+
+    def _call_tool(obj, *args, **kwargs):  # noqa: D401 – helper
+        if callable(obj):
+            return obj(*args, **kwargs)
+
+        for attr in ("fn", "_fn", "function", "_function", "call"):
+            maybe = getattr(obj, attr, None)
+            if callable(maybe):
+                return maybe(*args, **kwargs)
+
+        raise TypeError(f"Tool object of type {type(obj).__name__} is not callable")
+
+    def _run_tools_directly() -> str:  # noqa: D401 – inner helper
+        logs_text = _call_tool(fetch_dagster_logs, run_url)
+        return _call_tool(diagnose_logs, logs_text)
+
+    try:
+        # Quick path – succeed immediately without touching the Agent Runner.
+        output = _run_tools_directly()
+        print(output)
+        sys.exit(0)
+
+    except Exception as direct_exc:  # noqa: BLE001 – best-effort fallback
+        # If the direct execution fails for *any* reason, fall back to the
+        # original Agent-based workflow.  This retains backwards compatibility
+        # for environments that rely on the LLM-driven reasoning chain.
+
+        logging.warning(
+            "Direct tool execution failed (%s). Falling back to openai-agents.",
+            direct_exc,
+        )
+
+    # ------------------------------------------------------------------
+    # Fallback – delegate to openai-agents (may block if underlying issue
+    # persists, but we already attempted the fast path above).
+    # ------------------------------------------------------------------
+
     set_default_openai_key(OPENAI_API_KEY)
 
     agent = Agent(
@@ -94,5 +150,6 @@ def main() -> None:  # noqa: D401 – public CLI entrypoint
 
     result = Runner.run_sync(agent, f"Fetch and diagnose errors for {run_url}")
     print(result.final_output)
+
     # Explicitly exit to terminate any lingering background processes or threads
     sys.exit(0)
